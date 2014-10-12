@@ -19,6 +19,8 @@
 
         private DeviceInformation selectedDevice;
 
+        private BluetoothRf bluetoothRf;
+
         public MainViewModel()
         {
             this.Hello = "Hallo Leipzig";
@@ -79,14 +81,19 @@
 
         public async void LoadData()
         {
-            var bluetoothRf = new BluetoothRf();
-            var bluetoothDeviceInformations = await bluetoothRf.EnumerateDevicesAsync();
+            this.bluetoothRf = new BluetoothRf();
+            var bluetoothDeviceInformations = await this.bluetoothRf.EnumerateDevicesAsync();
             this.DeviceInformations = new ObservableCollection<DeviceInformation>(bluetoothDeviceInformations);
         }
 
-        private void HandleConnectCommand(object obj)
+        private async void HandleConnectCommand(object obj)
         {
-            Debug.WriteLine(this.SelectedDevice.Name);
+            if (this.SelectedDevice == null)
+            {
+                return;
+            }
+
+            await this.bluetoothRf.ConnectToDeviceAsync(this.SelectedDevice);
         }
     }
 }
