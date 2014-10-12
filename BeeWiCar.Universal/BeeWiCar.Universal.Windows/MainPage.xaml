@@ -16,6 +16,18 @@
 	</Interactivity:Interaction.Behaviors>
 
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
 		<TextBlock Text="{Binding Hello}" Margin="50"/>
-	</Grid>
+        <ListBox Grid.Row="1" ItemsSource="{Binding DeviceInformations}" >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
 </Page>
