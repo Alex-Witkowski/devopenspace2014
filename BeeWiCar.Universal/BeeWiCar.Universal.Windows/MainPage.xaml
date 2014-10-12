@@ -22,12 +22,13 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
 		<TextBlock Text="{Binding Hello}" Margin="50"/>
-        <ListBox Grid.Row="1" ItemsSource="{Binding DeviceInformations}" >
-            <ListBox.ItemTemplate>
+        <ListView Grid.Row="1" ItemsSource="{Binding DeviceInformations}" SelectionMode="Single" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
+            <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}"/>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button Grid.Row="2" Content="Localize me" Command="{Binding ConnectCommand}" />
     </Grid>
 </Page>
