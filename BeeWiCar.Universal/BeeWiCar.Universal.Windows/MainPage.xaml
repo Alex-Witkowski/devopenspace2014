@@ -9,6 +9,6 @@
     DataContext="{StaticResource MainViewModel}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <TextBlock Text="{Binding Hello}" Margin="50"/>
     </Grid>
 </Page>

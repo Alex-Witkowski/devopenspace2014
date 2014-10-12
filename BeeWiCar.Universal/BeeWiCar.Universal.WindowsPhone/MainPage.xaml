@@ -10,5 +10,6 @@
     DataContext="{StaticResource MainViewModel}">
 
     <Grid>
+        <TextBlock Text="{Binding Hello}" Margin="50"/>
     </Grid>
 </Page>
