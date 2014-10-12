@@ -44,7 +44,7 @@
             }
         }
 
-        private async void LoadData()
+        public async void LoadData()
         {
             var bluetoothRf = new BluetoothRf();
             var bluetoothDeviceInformations = await bluetoothRf.EnumerateDevicesAsync();
