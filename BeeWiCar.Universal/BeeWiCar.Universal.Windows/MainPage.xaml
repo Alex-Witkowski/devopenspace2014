@@ -29,14 +29,14 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Grid.Row="2" Content="Localize me" Command="{Binding ConnectCommand}" />
-        <Button Content="Forward" HorizontalAlignment="Left" Margin="1092,146,0,0" Grid.Row="2" VerticalAlignment="Top">
+        <Button x:Uid="MainPgConnectBtn" Grid.Row="2" Content="Localize me" Command="{Binding ConnectCommand}" />
+        <Button x:Uid="MainPgForwardBtn" Content="Forward" HorizontalAlignment="Left" Margin="1092,146,0,0" Grid.Row="2" VerticalAlignment="Top">
         	<Interactivity:Interaction.Behaviors>
         		<Core:EventTriggerBehavior EventName="Click">
         			<Core:InvokeCommandAction Command="{Binding ForewardCommand}"/>
         		</Core:EventTriggerBehavior>
         	</Interactivity:Interaction.Behaviors>
         </Button>
-        <Button Content="Back" HorizontalAlignment="Left" Margin="1101,209,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <Button x:Uid="MainPgBackBtn" Content="Back" HorizontalAlignment="Left" Margin="1101,209,0,0" Grid.Row="2" VerticalAlignment="Top"/>
     </Grid>
 </Page>
