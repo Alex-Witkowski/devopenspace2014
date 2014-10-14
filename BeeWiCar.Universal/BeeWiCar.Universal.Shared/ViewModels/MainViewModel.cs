@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using System.Windows.Input;
 
+    using Windows.Devices.Sensors;
+
     using BeeWiCar.Universal.Common;
     using BeeWiCar.Universal.Data;
     using BeeWiCar.Universal.Services;
@@ -34,16 +36,81 @@
 
         private ICommand forewardCommand;
 
+        private bool useSensorControl;
+
+        private Inclinometer inclinometer;
+
+        private InclinometerReading initialReading;
+
         public MainViewModel()
         {
             this.Hello = "Hallo Leipzig";
             this.ConnectCommand = new DelegateCommand<object>(this.HandleConnectCommand);
             this.ForewardCommand = new DelegateCommand<object>(this.HandleForwardCommand);
+            this.inclinometer = Inclinometer.GetDefault();
         }
 
         private async void HandleForwardCommand(object obj)
         {
             await this.SendByteSequenceAsync(new[] { BeeWiCarCommands.Forward_Go });
+        }
+
+        public bool UseSensorControl
+        {
+            get
+            {
+                return this.useSensorControl;
+            }
+
+            set
+            {
+                this.SetProperty(ref this.useSensorControl, value);
+                this.UpdateSensorControlState(value);
+            }
+        }
+
+        private void UpdateSensorControlState(bool value)
+        {
+            // This is a bad way of handling. Better give the user feedback or disable the toggel switch.
+            if (this.inclinometer == null)
+            {
+                return;
+            }
+
+            if (value)
+            {
+                this.inclinometer.ReadingChanged += this.HandleInclinometerReadingChanged;
+
+                // Save initial reading as some sort of calibrating the current device orientation
+                this.initialReading = this.inclinometer.GetCurrentReading();
+            }
+            else
+            {
+                this.inclinometer.ReadingChanged -= this.HandleInclinometerReadingChanged;
+            }
+        }
+
+        private async void HandleInclinometerReadingChanged(Inclinometer sender, InclinometerReadingChangedEventArgs args)
+        {
+            var reading = args.Reading;
+            if (reading == null || this.initialReading == null)
+            {
+                return;
+            }
+
+            Debug.WriteLine("Initial Pitch: " + this.initialReading.PitchDegrees + " Roll: " + this.initialReading.RollDegrees);
+            Debug.WriteLine("Reading Pitch: " + reading.PitchDegrees + " Roll: " + reading.RollDegrees);
+
+            // steer car by difference of actual reading to initial reading
+            var pitch = reading.PitchDegrees - this.initialReading.PitchDegrees;
+            if (pitch < -25)
+            {
+                await this.SendByteSequenceAsync(new[] { BeeWiCarCommands.Forward_Go });
+            }
+            else
+            {
+                await this.SendByteSequenceAsync(new[] { BeeWiCarCommands.Forward_Stop });
+            }
         }
 
         public ICommand ConnectCommand

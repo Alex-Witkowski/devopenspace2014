@@ -22,13 +22,8 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
 		<TextBlock Text="{Binding Hello}" Margin="50"/>
-        <ListView Grid.Row="1" ItemsSource="{Binding DeviceInformations}" SelectionMode="Single" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Name}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+		<ToggleSwitch Header="Sensor Control" HorizontalAlignment="Right" Margin="0,0,30,0" IsOn="{Binding UseSensorControl, Mode=TwoWay}"/>
+        <ListView Grid.Row="1" SelectionMode="Single" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"/>
         <Button x:Uid="MainPgConnectBtn" Grid.Row="2" Content="Localize me" Command="{Binding ConnectCommand}" />
         <Button x:Uid="MainPgForwardBtn" Content="Forward" HorizontalAlignment="Left" Margin="1092,146,0,0" Grid.Row="2" VerticalAlignment="Top">
         	<Interactivity:Interaction.Behaviors>
