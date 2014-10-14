@@ -1,13 +1,17 @@
 ﻿namespace BeeWiCar.Universal.ViewModels
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.Threading.Tasks;
     using System.Windows.Input;
 
     using BeeWiCar.Universal.Common;
     using BeeWiCar.Universal.Services;
 
     using Windows.Devices.Enumeration;
+    using Windows.Networking.Sockets;
+    using Windows.Storage.Streams;
 
     public class MainViewModel : BaseViewModel
     {
@@ -20,6 +24,12 @@
         private DeviceInformation selectedDevice;
 
         private BluetoothRf bluetoothRf;
+
+        private StreamSocket socket;
+
+        private DataWriter dataWriter;
+
+        private DataReader dataReader;
 
         public MainViewModel()
         {
@@ -93,7 +103,65 @@
                 return;
             }
 
-            await this.bluetoothRf.ConnectToDeviceAsync(this.SelectedDevice);
+            this.socket = await this.bluetoothRf.ConnectToDeviceAsync(this.SelectedDevice);
+
+            // DataWriter and -Reader not StreamWriter because StreamWriter only supports char and string. 
+            this.dataWriter = new DataWriter(this.socket.OutputStream);
+            this.dataReader = new DataReader(this.socket.InputStream);
+            var read = this.ReadDataAsync();
+        }
+
+        private async Task ReadDataAsync()
+        {
+            while (this.dataReader != null)
+            {
+                try
+                {
+                    // Read first byte (length of the subsequent message, 255 or less).  
+                    uint sizeFieldCount = await this.dataReader.LoadAsync(1);
+                    if (sizeFieldCount != 1)
+                    {
+                        // The underlying socket was closed before we were able to read the whole data.  
+                        return;
+                    }
+
+                    // Read the message.  
+                    uint messageLength = this.dataReader.ReadByte();
+                    uint actualMessageLength = await this.dataReader.LoadAsync(messageLength);
+                    if (messageLength != actualMessageLength)
+                    {
+                        // The underlying socket was closed before we were able to read the whole data.  
+                        return;
+                    }
+
+                    // Read the message and process it. 
+                    string message = this.dataReader.ReadString(actualMessageLength);
+
+                    this.HandleMessageReceived(message);
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+            }
+        }
+
+        public async Task SendByteSequenceAsync(byte[] sequence)
+        {
+            if (this.dataWriter != null)
+            {
+                foreach (byte data in sequence)
+                {
+                    this.dataWriter.WriteByte(data);
+                }
+
+                await this.dataWriter.StoreAsync();
+            }
+        }
+
+        private void HandleMessageReceived(string message)
+        {
+            Debug.WriteLine(message);
         }
     }
 }

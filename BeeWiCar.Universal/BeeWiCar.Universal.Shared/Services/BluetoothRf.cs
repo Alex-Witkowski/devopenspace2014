@@ -24,7 +24,7 @@
             return deviceInformationCollection;
         }
 
-        public async Task ConnectToDeviceAsync(DeviceInformation deviceInfromation)
+        public async Task<StreamSocket> ConnectToDeviceAsync(DeviceInformation deviceInfromation)
         {
             try
             {
@@ -34,7 +34,7 @@
                 {
                     this.socket = new StreamSocket();
                     await this.socket.ConnectAsync(this.rfConnection.ConnectionHostName, this.rfConnection.ConnectionServiceName, SocketProtectionLevel.BluetoothEncryptionAllowNullAuthentication);
-                    //// Do something useful with the socket
+                    return this.socket;
                 }
                 else
                 {
@@ -45,6 +45,8 @@
             {
                 Debug.WriteLine(exception);
             }
+
+            return null;
         }
     }
 }
