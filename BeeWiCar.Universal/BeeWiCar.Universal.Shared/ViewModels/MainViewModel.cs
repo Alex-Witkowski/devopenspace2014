@@ -7,6 +7,10 @@
     using System.Windows.Input;
 
     using Windows.Devices.Sensors;
+    using Windows.System;
+    using Windows.UI.Core;
+    using Windows.UI.Xaml;
+    using Windows.UI.Xaml.Input;
 
     using BeeWiCar.Universal.Common;
     using BeeWiCar.Universal.Data;
@@ -47,8 +51,30 @@
             this.Hello = "Hallo Leipzig";
             this.ConnectCommand = new DelegateCommand<object>(this.HandleConnectCommand);
             this.ForewardCommand = new DelegateCommand<object>(this.HandleForwardCommand);
+            this.KeyDownCommand = new DelegateCommand<object>(this.HandleKeyDownCommand);
+
             this.inclinometer = Inclinometer.GetDefault();
         }
+
+        private void HandleKeyDownCommand(object obj)
+        {
+            //// You will see this now good known "Event To Command Behavior" won't work verry well because of wrong keyboard focus
+            //// there try
+            //// Window.Current.CoreWindow.KeyDown += HandleKeyDown;
+
+            var args = obj as KeyRoutedEventArgs;
+            if (args == null)
+            {
+                return;
+            }
+
+            if (args.Key == VirtualKey.Up)
+            {
+                this.HandleForwardCommand(null);
+            }
+        }
+
+        public ICommand KeyDownCommand { get; set; }
 
         private async void HandleForwardCommand(object obj)
         {
