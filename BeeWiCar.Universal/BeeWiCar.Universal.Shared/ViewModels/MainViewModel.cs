@@ -7,6 +7,7 @@
     using System.Windows.Input;
 
     using BeeWiCar.Universal.Common;
+    using BeeWiCar.Universal.Data;
     using BeeWiCar.Universal.Services;
 
     using Windows.Devices.Enumeration;
@@ -31,10 +32,18 @@
 
         private DataReader dataReader;
 
+        private ICommand forewardCommand;
+
         public MainViewModel()
         {
             this.Hello = "Hallo Leipzig";
             this.ConnectCommand = new DelegateCommand<object>(this.HandleConnectCommand);
+            this.ForewardCommand = new DelegateCommand<object>(this.HandleForwardCommand);
+        }
+
+        private async void HandleForwardCommand(object obj)
+        {
+            await this.SendByteSequenceAsync(new[] { BeeWiCarCommands.Forward_Go });
         }
 
         public ICommand ConnectCommand
@@ -47,6 +56,19 @@
             set
             {
                 this.SetProperty(ref this.connectCommand, value);
+            }
+        }
+
+        public ICommand ForewardCommand
+        {
+            get
+            {
+                return this.forewardCommand;
+            }
+
+            set
+            {
+                this.SetProperty(ref this.forewardCommand, value);
             }
         }
 
